@@ -1,0 +1,9 @@
+{
+  "profiles": {
+    "NetworkExtensions": {
+      "commandName": "Executable",
+      "executablePath": "D:\\C#_train\\NetworkExtensions\\NetworkExtensions\\bin\\Release\\net8.0\\publish\\win-x64\\createdump.exe",
+      "nativeDebugging": true
+    }
+  }
+}
