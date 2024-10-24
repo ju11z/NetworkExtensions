@@ -50,7 +50,7 @@ namespace TCPClientExtensions
     {
         const byte MESSAGE_SIZE_BYTES = 8;
 
-        public static void WriteCustom(this TcpClient client, string message)
+        public static void WriteCustom(this TcpClient client, string message, bool log=true)
         {
             ulong messageSize = (ulong)message.Length;
 
@@ -59,14 +59,15 @@ namespace TCPClientExtensions
 
             byte[] messageWithSize = messageSizeBytes.Concat(messageBytes).ToArray();
 
-            Console.WriteLine($"Sending {messageSize} bytes. Message: {message}");
+            if(log)
+                Console.WriteLine($"Sending {messageSize} bytes. Message: {message}");
 
             NetworkStream nwStream = client.GetStream();
 
             nwStream.Write(messageWithSize, 0, messageWithSize.Length);
         }
 
-        public static string ReadCustom(this TcpClient client)
+        public static string ReadCustom(this TcpClient client, bool log=true)
         {
             NetworkStream nwStream = client.GetStream();
 
@@ -82,7 +83,8 @@ namespace TCPClientExtensions
             if (dataReceivedSize != (ulong)dataReceived.Length)
                 throw new CorruptedDataException($"Not all data was recived correctly. Received message: {dataReceived}. Expected to receive {dataReceivedSize} bytes, but got {dataReceived.Length} bytes instead.");
 
-            Console.WriteLine($"Receiving {dataReceivedSize} bytes. Message: {dataReceived}");
+            if (log)
+                Console.WriteLine($"Receiving {dataReceivedSize} bytes. Message: {dataReceived}");
 
             return dataReceived;
         }
