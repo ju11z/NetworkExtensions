@@ -67,6 +67,23 @@ namespace TCPClientExtensions
             nwStream.Write(messageWithSize, 0, messageWithSize.Length);
         }
 
+        public static async Task WriteCustomAsync(this TcpClient client, string message, bool log = true)
+        {
+            ulong messageSize = (ulong)message.Length;
+
+            byte[] messageSizeBytes = BitConverter.GetBytes(messageSize);
+            byte[] messageBytes = ASCIIEncoding.ASCII.GetBytes(message);
+
+            byte[] messageWithSize = messageSizeBytes.Concat(messageBytes).ToArray();
+
+            if (log)
+                Console.WriteLine($"Sending {messageSize} bytes. Message: {message}");
+
+            NetworkStream nwStream = client.GetStream();
+
+            await nwStream.WriteAsync(messageWithSize, 0, messageWithSize.Length);
+        }
+
         public static string ReadCustom(this TcpClient client, bool log=true)
         {
             NetworkStream nwStream = client.GetStream();
@@ -87,6 +104,43 @@ namespace TCPClientExtensions
                 Console.WriteLine($"Receiving {dataReceivedSize} bytes. Message: {dataReceived}");
 
             return dataReceived;
+        }
+
+        public static async Task<string> ReadCustomAsync(this TcpClient client, bool log = true)
+        {
+            NetworkStream nwStream = client.GetStream();
+
+            byte[] receivedMessageSizeBytes = new byte[8];
+            await nwStream.ReadAsync(receivedMessageSizeBytes, 0, receivedMessageSizeBytes.Count());
+            ulong dataReceivedSize = BitConverter.ToUInt64(receivedMessageSizeBytes, 0);
+
+            byte[] receivedMessageBytes = new byte[dataReceivedSize];
+            await nwStream.ReadAsync(receivedMessageBytes, 0, receivedMessageBytes.Length);
+
+            string dataReceived = Encoding.ASCII.GetString(receivedMessageBytes);
+
+            if (dataReceivedSize != (ulong)dataReceived.Length)
+                throw new CorruptedDataException($"Not all data was recived correctly. Received message: {dataReceived}. Expected to receive {dataReceivedSize} bytes, but got {dataReceived.Length} bytes instead.");
+
+            if (log)
+                Console.WriteLine($"Receiving {dataReceivedSize} bytes. Message: {dataReceived}");
+
+            return dataReceived;
+        }
+
+        public static string GenerateRandomLatinString(int length)
+        {
+            const string chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
+            StringBuilder sb = new StringBuilder();
+            Random rnd = new Random();
+
+            for (int i = 0; i < length; i++)
+            {
+                int index = rnd.Next(chars.Length);
+                sb.Append(chars[index]);
+            }
+
+            return sb.ToString();
         }
     }
 }
