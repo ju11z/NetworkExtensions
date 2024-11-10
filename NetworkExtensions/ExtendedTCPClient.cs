@@ -22,6 +22,29 @@ namespace TCPClientExtensions
         ServerError=500
     }
 
+    public class ServerLoginResponce
+    {
+        public string Message { get; init; }
+
+        public bool IsClientLoggedIn { get; init; }
+
+        public ServerLoginResponce(string message, bool isClientLoggedIn)
+        {
+            Message = message;
+            IsClientLoggedIn = isClientLoggedIn;
+        }
+    }
+
+    public class ClientLoginResponce
+    {
+        public string Login { get; init; }
+
+        public ClientLoginResponce(string login)
+        {
+            Login = login;
+        }
+    }
+
     public class CustomResponce
     {
         public int QueryNumber { get; set; }
