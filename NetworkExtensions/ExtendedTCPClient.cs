@@ -5,7 +5,35 @@ using System.Text.Json;
 
 namespace TCPClientExtensions
 {
-    
+    public class ClientMessageData
+    {
+        public string LoginFrom { get; init; }
+        public string LoginTo { get; init; }
+        public string Message { get; init; }
+
+        public DateTime TimeSent { get; init; }
+
+        public ClientMessageData(string loginFrom, string loginTo, string message)
+        {
+            LoginFrom = loginFrom;
+            LoginTo = loginTo;
+            Message = message;
+
+            TimeSent = DateTime.Now;
+        }
+    }
+
+    public class AskForNewMessagesRequest
+    {
+        public string ClientLogin { get; init; }
+
+        public AskForNewMessagesRequest(string clientLogin)
+        {
+            ClientLogin= clientLogin;
+        }
+    }
+
+
     public class CustomQuery
     {
         public int QueryNumber { get; set; }
@@ -28,10 +56,13 @@ namespace TCPClientExtensions
 
         public bool IsClientLoggedIn { get; init; }
 
-        public ServerLoginResponce(string message, bool isClientLoggedIn)
+        public string AgreedLogin { get; init; }
+
+        public ServerLoginResponce(string message, bool isClientLoggedIn, string agreedLogin = null)
         {
             Message = message;
             IsClientLoggedIn = isClientLoggedIn;
+            AgreedLogin = agreedLogin;
         }
     }
 
